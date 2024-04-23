@@ -23,7 +23,21 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const userCollection = client.db("BiteCafedb").collection("Users");
+
+    // post user data into user collection
+    app.post("/users", async (req, res) => {
+        const user = req.body;
+        const query = { email: user.email };
+        const existingUser = await userCollection.findOne(query);
+        if (existingUser) {
+          return res.send({ message: "User already exists", insertedInd: null });
+        }
+        const result = await userCollection.insertOne(user);
+        res.send(result);
+      });
     
+
    
    
    
