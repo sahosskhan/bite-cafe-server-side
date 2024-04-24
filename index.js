@@ -51,7 +51,12 @@ async function run() {
       const result = await menuCollection.find().toArray();
       res.send(result);
   })
-   
+       // get all reviews from review collection
+  app.get('/show-all-reviews', async(req, res) =>{
+    const result = await reviewCollection.find().toArray();
+    res.send(result);
+})
+  
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
