@@ -8,23 +8,6 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
-
-const verifyJWT = (req, res, next) => {
-  const authorization = req.headers.authorization;
-  if (!authorization) {
-    return res.status(401).send({ error: true, message: 'unauthorized access' });
-  }
-  // bearer token
-  const token = authorization.split(' ')[1];
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ error: true, message: 'unauthorized access' })
-    }
-    req.decoded = decoded;
-    next();
-  })
-}
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.DB_URL;
 
@@ -44,44 +27,76 @@ async function run() {
     const reviewCollection = client.db("BiteCafedb").collection("reviews");
     const cartCollection = client.db("BiteCafedb").collection("carts");
 
-
-    app.post('/jwt', (req, res) => {
-      const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-
-      res.send({ token })
-    })
-
-    // Warning: use verifyJWT before using verifyAdmin
-    const verifyAdmin = async (req, res, next) => {
-      const email = req.decoded.email;
-      const query = { email: email }
-      const user = await usersCollection.findOne(query);
-      if (user?.role !== 'admin') {
-        return res.status(403).send({ error: true, message: 'forbidden message' });
-      }
-      next();
+//jwt crate
+app.post("/jwt", async (req, res) => {
+  const user = req.body;
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2h" });
+  res.send({ token });
+});
+// verify token
+const verifyToken = (req, res, next) => {
+  // console.log("inside verify token", req.headers.authorization);
+  if (!req.headers.authorization) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  const token = req.headers.authorization.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "unauthorized access" });
     }
+    req.decoded = decoded;
+    next();
+  });
+};
+
+const verifyAdmin = async (req, res, next) => {
+  try {
+    if (!req.decoded || !req.decoded.email) {
+      throw new Error('Invalid token');
+    }
+    const email = req.decoded.email;
+    const query = { email: email };
+    const user = await userCollection.findOne(query);
+    if (!user || user.role !== 'admin') {
+      throw new Error('User is not an admin');
+    }
+    next();
+  } catch (error) {
+    console.error('Error in verifyAdmin middleware:', error);
+    res.status(403).send({ message: 'Forbidden access' });
+  }
+}
+
+app.get("/users/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const email = req.params.email;
+    if (email !== req.decoded.email) {
+      throw new Error('Email in params does not match token');
+    }
+    const query = { email: email };
+    const user = await userCollection.findOne(query);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const admin = user.role === "admin";
+    res.send({ admin });
+  } catch (error) {
+    console.error('Error in /users/admin/:email route:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+});
+app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
+  const result = await userCollection.find().toArray();
+  res.send(result);
+});
+
 
         //  get all user data from user collection
-        app.get("/user-list",verifyJWT, verifyAdmin, async (req, res) => {
+        app.get("/user-list", async (req, res) => {
           const result = await userCollection.find().toArray();
           res.send(result);
         });
-  
-   
-      app.get('/users/admin/:email', verifyJWT, async (req, res) => {
-        const email = req.params.email;
-  
-        if (req.decoded.email !== email) {
-          res.send({ admin: false })
-        }
-  
-        const query = { email: email }
-        const user = await usersCollection.findOne(query);
-        const result = { admin: user?.role === 'admin' }
-        res.send(result);
-      })
+
   
       app.patch('/users/admin/:id', async (req, res) => {
         const id = req.params.id;
