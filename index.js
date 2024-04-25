@@ -27,13 +27,13 @@ async function run() {
     const reviewCollection = client.db("BiteCafedb").collection("reviews");
     const cartCollection = client.db("BiteCafedb").collection("carts");
 
-//jwt crate
+//jwt token crate
 app.post("/jwt", async (req, res) => {
   const user = req.body;
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2h" });
   res.send({ token });
 });
-// verify token
+// verify jwt token
 const verifyToken = (req, res, next) => {
   // console.log("inside verify token", req.headers.authorization);
   if (!req.headers.authorization) {
@@ -49,6 +49,7 @@ const verifyToken = (req, res, next) => {
   });
 };
 
+// verify admin
 const verifyAdmin = async (req, res, next) => {
   try {
     if (!req.decoded || !req.decoded.email) {
@@ -67,6 +68,7 @@ const verifyAdmin = async (req, res, next) => {
   }
 }
 
+// filter admin user
 app.get("/users/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   try {
     const email = req.params.email;
@@ -85,6 +87,8 @@ app.get("/users/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
     res.status(500).send({ message: 'Internal server error' });
   }
 });
+
+// get all user data from user collection
 app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
   const result = await userCollection.find().toArray();
   res.send(result);
@@ -98,37 +102,53 @@ app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
         });
 
   
-      app.patch('/users/admin/:id', async (req, res) => {
-        const id = req.params.id;
-        console.log(id);
-        const filter = { _id: new ObjectId(id) };
-        const updateDoc = {
-          $set: {
-            role: 'admin'
-          },
-        };
-  
-        const result = await usersCollection.updateOne(filter, updateDoc);
-        res.send(result);
-  
-      })
+  app.patch('/users/admin/:id', async (req, res) => {
+  const id = req.params.id;
+  // Validate the format of the ID parameter
+  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+    return res.status(400).send({ message: 'Invalid ID format' });
+  }
+
+  try {
+    const filter = { _id: new ObjectId(id) };
+    const updateDoc = {
+      $set: {
+        role: 'admin'
+      },
+    };
+
+    const result = await userCollection.updateOne(filter, updateDoc);
+    res.send(result);
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+});
+
+        
 
 
     // post user data into user collection
     app.post('/users', async (req, res) => {
       const user = req.body;
       const query = { email: user.email }
-      const existingUser = await usersCollection.findOne(query);
+      const existingUser = await userCollection.findOne(query);
 
       if (existingUser) {
         return res.send({ message: 'user already exists' })
       }
 
-      const result = await usersCollection.insertOne(user);
+      const result = await userCollection.insertOne(user);
       res.send(result);
     });
 
-
+    app.delete('/user-delete-one/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
+      
    
    
       // get all menus from menu collection
