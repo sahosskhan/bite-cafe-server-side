@@ -156,6 +156,21 @@ app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
   })
+
+
+
+  app.post('/add-menu-items',  async (req, res) => {
+    const newItem = req.body;
+    const result = await menuCollection.insertOne(newItem)
+    res.send(result);
+  })
+
+
+
+
+
+
+
        // get all reviews from review collection
   app.get('/show-all-reviews', async(req, res) =>{
     const result = await reviewCollection.find().toArray();
