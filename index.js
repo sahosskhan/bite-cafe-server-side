@@ -95,6 +95,8 @@ app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
 });
 
 
+
+
         //  get all user data from user collection
         app.get("/user-list", async (req, res) => {
           const result = await userCollection.find().toArray();
@@ -166,7 +168,12 @@ app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
   })
 
 
-
+  app.delete('/menu-delete-one/:id',  async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await menuCollection.deleteOne(query);
+    res.send(result);
+  })
 
 
 
