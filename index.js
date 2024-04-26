@@ -159,6 +159,13 @@ app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
       res.send(result);
   })
 
+  app.get('/show-one-menu/:id', async(req, res) =>{
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await menuCollection.findOne(query);
+    res.send(result);
+})
+
 
 
   app.post('/add-menu-items',  async (req, res) => {
