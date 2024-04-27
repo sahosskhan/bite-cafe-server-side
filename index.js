@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
 require('dotenv').config()
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -26,75 +26,16 @@ async function run() {
     const menuCollection = client.db("BiteCafedb").collection("menu");
     const reviewCollection = client.db("BiteCafedb").collection("reviews");
     const cartCollection = client.db("BiteCafedb").collection("carts");
-
-//jwt token crate
-app.post("/jwt", async (req, res) => {
-  const user = req.body;
-  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2h" });
-  res.send({ token });
-});
-// verify jwt token
-const verifyToken = (req, res, next) => {
-  // console.log("inside verify token", req.headers.authorization);
-  if (!req.headers.authorization) {
-    return res.status(401).send({ message: "unauthorized access" });
-  }
-  const token = req.headers.authorization.split(" ")[1];
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: "unauthorized access" });
-    }
-    req.decoded = decoded;
-    next();
-  });
-};
-
-// verify admin
-const verifyAdmin = async (req, res, next) => {
-  try {
-    if (!req.decoded || !req.decoded.email) {
-      throw new Error('Invalid token');
-    }
-    const email = req.decoded.email;
-    const query = { email: email };
-    const user = await userCollection.findOne(query);
-    if (!user || user.role !== 'admin') {
-      throw new Error('User is not an admin');
-    }
-    next();
-  } catch (error) {
-    console.error('Error in verifyAdmin middleware:', error);
-    res.status(403).send({ message: 'Forbidden access' });
-  }
-}
-
-// filter admin user
-app.get("/users/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
-  try {
-    const email = req.params.email;
-    if (email !== req.decoded.email) {
-      throw new Error('Email in params does not match token');
-    }
-    const query = { email: email };
-    const user = await userCollection.findOne(query);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const admin = user.role === "admin";
-    res.send({ admin });
-  } catch (error) {
-    console.error('Error in /users/admin/:email route:', error);
-    res.status(500).send({ message: 'Internal server error' });
-  }
-});
-
-// get all user data from user collection
-app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
-  const result = await userCollection.find().toArray();
-  res.send(result);
-});
+    const paymentCollection = client.db("BiteCafedb").collection("payments");
 
 
+
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await userCollection.findOne(query);
+      res.send({ isAdmin: user?.role === "admin" });
+    });
 
 
         //  get all user data from user collection
@@ -104,42 +45,29 @@ app.get("/users",verifyToken,verifyAdmin, async (req, res) => {
         });
 
   
-  app.patch('/users/admin/:id', async (req, res) => {
-  const id = req.params.id;
-  // Validate the format of the ID parameter
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    return res.status(400).send({ message: 'Invalid ID format' });
-  }
-
-  try {
-    const filter = { _id: new ObjectId(id) };
-    const updateDoc = {
-      $set: {
-        role: 'admin'
-      },
-    };
-
-    const result = await userCollection.updateOne(filter, updateDoc);
-    res.send(result);
-  } catch (error) {
-    console.error('Error updating user role:', error);
-    res.status(500).send({ message: 'Internal server error' });
-  }
-});
+        app.patch("/users/admin/:id", async  (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: new ObjectId(id)};
+          const updatedDoc = {
+            $set: {
+              role: "admin",
+            },
+          };
+          const result = await userCollection.updateOne(filter, updatedDoc);
+          res.send(result);
+        });
 
         
 
 
     // post user data into user collection
-    app.post('/users', async (req, res) => {
+    app.post("/users", async (req, res) => {
       const user = req.body;
-      const query = { email: user.email }
+      const query = { email: user.email };
       const existingUser = await userCollection.findOne(query);
-
       if (existingUser) {
-        return res.send({ message: 'user already exists' })
+        return res.send({ message: "User already exists", insertedInd: null });
       }
-
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
@@ -232,6 +160,43 @@ app.delete('/carts-delete-item/:id', async (req, res) => {
   const result = await cartCollection.deleteOne(query);
   res.send(result);
 })
+
+
+
+ // create payment intent
+ app.post('/create-payment-intent',  async (req, res) => {
+  const { price } = req.body;
+  const amount = parseInt(price * 100);
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: 'usd',
+    payment_method_types: ['card']
+  });
+
+  res.send({
+    clientSecret: paymentIntent.client_secret
+  })
+})
+
+
+// payment related api
+app.post('/payments',  async (req, res) => {
+  const payment = req.body;
+  const insertResult = await paymentCollection.insertOne(payment);
+  const cartItemIds = payment.cartItems.map(id => new ObjectId(id));
+  const query = { _id: { $in: cartItemIds } };
+  const deleteResult = await cartCollection.deleteMany(query);
+  
+
+  res.send({ insertResult, deleteResult });
+})
+
+
+
+
+
+
+
   
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
