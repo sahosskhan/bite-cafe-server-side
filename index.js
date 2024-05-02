@@ -186,18 +186,23 @@ app.post('/payments',  async (req, res) => {
   const cartItemIds = payment.cartItems.map(id => new ObjectId(id));
   const query = { _id: { $in: cartItemIds } };
   const deleteResult = await cartCollection.deleteMany(query);
-  
 
   res.send({ insertResult, deleteResult });
 })
 
 
+app.get('/show-all-payments', async (req, res) => {
+  const email = req.query.email;
+
+  if (!email) {
+    res.send([]);
+  }
+  const query = { email: email };
+  const result = await paymentCollection.find(query).toArray();
+  res.send(result);
+});
 
 
-
-
-
-  
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
