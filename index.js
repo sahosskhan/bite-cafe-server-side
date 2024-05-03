@@ -203,6 +203,40 @@ app.get('/show-all-payments', async (req, res) => {
 });
 
 
+app.get('/admin-stats',  async (req, res) => {
+  const users = await userCollection.estimatedDocumentCount();
+  const menuItems = await menuCollection.estimatedDocumentCount();
+  const orders = await paymentCollection.estimatedDocumentCount();
+
+
+  const result = await paymentCollection.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalRevenue: {
+          $sum: '$price'
+        }
+      }
+    }
+  ]).toArray();
+
+  const revenue = result.length > 0 ? result[0].totalRevenue : 0;
+
+  res.send({
+    users,
+    menuItems,
+    orders,
+    revenue
+  })
+})
+
+
+
+
+
+
+
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
