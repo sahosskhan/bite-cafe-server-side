@@ -247,11 +247,25 @@ async function run() {
       res.send(result);
     });
 
+         // get all bookings data filter by current login email from bookings collection
+         app.get("/show-all-bookings", async (req, res) => {
+          const email = req.query.email;
+    
+          if (!email) {
+            res.send([]);
+          }
+          const query = { email: email };
+          const result = await bookingsCollection.find(query).toArray();
+          res.send(result);
+        });
+
     // review related api
     app.get("/show-all-reviews", async (req, res) => {
       const result = await reviewCollection.find().toArray();
       res.send(result);
     });
+
+    
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
