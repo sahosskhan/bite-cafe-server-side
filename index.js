@@ -330,6 +330,17 @@ async function run() {
       res.send(result);
     });
     
+          // get all reviews data filter by current login email from  collection
+          app.get("/show-my-reviews", async (req, res) => {
+            const email = req.query.email;
+      
+            if (!email) {
+              res.send([]);
+            }
+            const query = { email: email };
+            const result = await reviewCollection.find(query).toArray();
+            res.send(result);
+          });
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
