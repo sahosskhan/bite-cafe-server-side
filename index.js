@@ -317,11 +317,18 @@ async function run() {
 
 
     // review related api
+
+    // show review data from collection
     app.get("/show-all-reviews", async (req, res) => {
       const result = await reviewCollection.find().toArray();
       res.send(result);
     });
-
+    // send reviews data to collection
+    app.post("/reviews-data-send", async (req, res) => {
+      const reviews = req.body;
+      const result = await reviewCollection.insertOne(reviews);
+      res.send(result);
+    });
     
 
     // Connect the client to the server	(optional starting in v4.7)
