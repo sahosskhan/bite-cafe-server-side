@@ -259,6 +259,63 @@ async function run() {
           res.send(result);
         });
 
+            // delete one bookings data from collection
+    app.delete("/delete-bookings-one/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingsCollection.deleteOne(query);
+      res.send(result);
+    });
+    
+        // get all bookings from collection
+        app.get("/get-all-bookings", async (req, res) => {
+          const result = await bookingsCollection.find().toArray();
+          res.send(result);
+        });
+
+    // update booking approved using patch request
+    app.patch("/approve-booking/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: "approved",
+        },
+      };
+      const result = await bookingsCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+
+        // update booking rejected using patch request
+        app.patch("/reject-booking/:id", async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: new ObjectId(id) };
+          const updatedDoc = {
+            $set: {
+              status: "rejected",
+            },
+          };
+          const result = await bookingsCollection.updateOne(filter, updatedDoc);
+          res.send(result);
+        });
+
+
+        // update booking rejected using patch request
+        app.patch("/re-booking/:id", async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: new ObjectId(id) };
+          const updatedDoc = {
+            $set: {
+              status: "pending",
+            },
+          };
+          const result = await bookingsCollection.updateOne(filter, updatedDoc);
+          res.send(result);
+        });
+
+
+
     // review related api
     app.get("/show-all-reviews", async (req, res) => {
       const result = await reviewCollection.find().toArray();
