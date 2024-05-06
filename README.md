@@ -27,26 +27,27 @@ Bite Cafe is a MERN (MongoDB, Express.js, React.js, Node.js) stack project desig
 ## Admin Dashboard
 
 ### Admin Home
-- Admin can see highlight of site content like how many total orders, total menus, total bookings, total revenue, customer.
-- Admin can see statistics of each category's item quantity from total order.
+- Admin can see highlights of site content like how many total orders, total menus, total bookings, total revenue, customers.
+- Admin can see each category's item quantity statistics from the total order.
 - Admin can see statistics of category ratio from total revenue.
 
 ### Manage User
 - Admin can change user role.
 - Admin can terminate or remove any user.
 
-### Mange Items
-- Admin can edit any item details in any time.
-- Admin can delete any item in any time.
+### Manage Items
+- Admin can edit any item details at any time.
+- Admin can delete any item at any time.
+- Admin can not order any items 
 
 ### Add Items
-- Admin can add any items in menu.
-- Admin can browse his local device for upload items image by imgbb.
+- Admin can add any items in the menu.
+- Admin can browse his local device to upload items image by imgbb.
 
 ### Manage Booking
 - Admin can see booking user details.
-- Admin can done 2 action to user booking approve & reject.
-- Once admin reject any booking can't approve & once approve any booking can't reject.
+- Admin can be done 2 actions to user booking approve & reject.
+- Once admin rejects any booking can't approve & once approved any booking can't be rejected.
 
 
 
@@ -76,6 +77,9 @@ Bite Cafe is a MERN (MongoDB, Express.js, React.js, Node.js) stack project desig
 - User can rebook his booking if the admin rejects his booking.
 
 
+## Captcha Verification
+- React Simple Captcha for captcha verification when login any user.
+
 
 ## Payment Method
 - Stripe payment method available for secure transactions.
@@ -84,7 +88,7 @@ Bite Cafe is a MERN (MongoDB, Express.js, React.js, Node.js) stack project desig
 - MongoDB CRUD operations & aggregate operations for efficient data management.
 
 ## User Authentication
-- Firebase for secure user custom authentication & user social authentication .
+- Firebase for secure user custom authentication & user social authentication.
 
 ## Authorization
 - JWT ( JSON WEB TOKEN ) for secure, authorized & valid user access on the site as authorization
