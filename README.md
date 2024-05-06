@@ -53,27 +53,27 @@ Bite Cafe is a MERN (MongoDB, Express.js, React.js, Node.js) stack project desig
 ## User Dashboard
 
 ### User Home
-- User see his profile card.
-- User can track his activity highlight like how many order, bookings, payments, reviews he completed.
+- User sees his profile card.
+- User can track his activity highlights like how many orders, bookings, payments, and reviews he completed.
 
 ### Reservation
-- User can reserve or book a table according his choice from here.
+- User can reserve or book a table according to his choice from here.
 
 ### Payment HISTORY
-- User can see his ordered items and paid history for his all order.
+- User can see his ordered items and paid history for his all orders.
 
 ### My Cart
-- User can see which items he add to cart for order.
-- User can delete added item from cart. 
-- User can proceed to pay for his added item as order confirm.
+- User can see which items he adds to the cart for order.
+- User can delete an added item from the cart. 
+- User can proceed to pay for his added item as the order is confirmed.
 
 ### Add Review
-- User can share feelings as review and rate our service from here.
+- Users can share their feelings as review and rate our service from here.
 
 ### My Bookings
 - User can see his booking status from here.
 - User can cancel his booking.
-- User can re book his booking if admin rejects his booking.
+- User can rebook his booking if the admin rejects his booking.
 
 
 
@@ -84,10 +84,10 @@ Bite Cafe is a MERN (MongoDB, Express.js, React.js, Node.js) stack project desig
 - MongoDB CRUD operations & aggregate operations for efficient data management.
 
 ## User Authentication
-- Firebase for secure user custom authentication & user social authentication  .
+- Firebase for secure user custom authentication & user social authentication .
 
 ## Authorization
-- JWT ( JSON WEB TOKEN ) for secure, authorize & valid user access in site as authorization
+- JWT ( JSON WEB TOKEN ) for secure, authorized & valid user access on the site as authorization
 
 ## Technology Used
 
@@ -96,22 +96,22 @@ Bite Cafe is a MERN (MongoDB, Express.js, React.js, Node.js) stack project desig
 - **Tailwind CSS**: A utility-first CSS framework packed with classes.
 - **Axios**: Promise-based HTTP client for making AJAX requests.
 - **TanStack Query**: Powerful asynchronous state management & handling API requests, pending and error states, and more. 
-- **Sweet Alert 2**: A beautiful, responsive, customizable and accessible (WAI-ARIA) replacement for JavaScript's popup boxes.
-- **Swiper JS**: Swiper is the most modern free mobile touch slider with hardware accelerated transitions and amazing native behavior.
-- **DaisyUI**: Its adds a set of customizable color names to Tailwind CSS and these new colors use CSS variables for the values.
+- **Sweet Alert 2**: A beautiful, responsive, customizable, and accessible (WAI-ARIA) replacement for JavaScript's popup boxes.
+- **Swiper JS**: Swiper is the most modern free mobile touch slider with hardware-accelerated transitions and amazing native behavior.
+- **DaisyUI**: It adds a set of customizable color names to Tailwind CSS and these new colors use CSS variables for the values.
 - **Recharts**: A composable charting library built on React components.
-
-
+- 
 - **React Hook From**: A react-based performant, flexible and extensible form with easy-to-use validation.
 - **React Router DOM**: Declarative routing for React applications.
--**React Rating**: Zero-dependency, highly customizable rating component for React.
--**React Stripe JS**:  React Stripe.js is a thin wrapper around Stripe Elements. It allows you to add Elements to any React app.
--**React Icons**: popular icon packs using ES6 imports.
--**React Loader Spinner**:react-spinner-loader provides simple React SVG spinner component which can be implemented for async await operation before data loads to the view.
--**React Parallax**: A React Component for parallax effect working in client-side and server-side rendering environment. 
--**React Responsive Carousel**:  Powerful, lightweight and fully customizable carousel component for React apps.
--**React Tab**: An accessible and easy tab component for ReactJS.
--**React Simple-captcha**: A very simple, powerful and highly customizable captcha for ReactJS.
+- **React Stripe JS**:  React Stripe.js is a thin wrapper around Stripe Elements. It allows you to add Elements to any React app.
+- 
+- **React Rating**: Zero-dependency, highly customizable rating component for React.
+- **React Icons**: popular icon packs using ES6 imports.
+- **React Loader Spinner**:react-spinner-loader provides a simple React SVG spinner component which can be implemented for async-await operation before data loads to the view.
+- **React Parallax**: A React Component for parallax effect working in client-side and server-side rendering environments. 
+- **React Responsive Carousel**:  Powerful, lightweight, and fully customizable carousel component for React apps.
+- **React Tab**: An accessible and easy tab component for ReactJS.
+- **React Simple-captcha**: A very simple, powerful, and highly customizable captcha for ReactJS.
 
 
 ### Backend
