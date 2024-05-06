@@ -5,6 +5,7 @@ require("dotenv").config();
 const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 const port = process.env.PORT || 5000;
 const jwt = require('jsonwebtoken')
+
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -213,7 +214,6 @@ const verifyToken = (req, res, next) => {
       const cartItemIds = payment.cartItems.map((id) => new ObjectId(id));
       const query = { _id: { $in: cartItemIds } };
       const deleteResult = await cartCollection.deleteMany(query);
-
       res.send({ insertResult, deleteResult });
     });
 
@@ -367,17 +367,8 @@ const verifyToken = (req, res, next) => {
             const result = await reviewCollection.find(query).toArray();
             res.send(result);
           });
-
-    // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
-
-    // await client.db("admin").command({ ping: 1 });
-    // console.log(
-    //   "Pinged your deployment. You successfully connected to MongoDB!"
-    // );
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+
   }
 }
 run().catch(console.dir);
